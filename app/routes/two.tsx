@@ -1,4 +1,4 @@
-import { Nav } from "~/components/Nav";
+import { Nav } from '~/components/Nav'
 
 export default function TwoRoute() {
   return (
@@ -6,5 +6,5 @@ export default function TwoRoute() {
       <Nav />
       <p>Two</p>
     </div>
-  );
+  )
 }

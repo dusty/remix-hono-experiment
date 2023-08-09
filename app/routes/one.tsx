@@ -1,8 +1,8 @@
-import { json } from "@remix-run/node";
-import { Nav } from "~/components/Nav";
+import { json } from '@remix-run/node'
+import { Nav } from '~/components/Nav'
 
 export async function loader() {
-  return json("ok");
+  return json('ok')
 }
 
 export default function OneRoute() {
@@ -11,5 +11,5 @@ export default function OneRoute() {
       <Nav />
       <p>One</p>
     </div>
-  );
+  )
 }

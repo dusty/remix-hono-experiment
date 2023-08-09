@@ -4,7 +4,7 @@
   "scripts": {
     "build": "remix build",
     "dev": "remix dev -c \"node build/index.js\"",
-    "start": "remix-serve build",
+    "start": "node build/index.js",
     "typecheck": "tsc"
   },
   "dependencies": {
