@@ -2,10 +2,10 @@
 export default {
   ignoredRouteFiles: ['**/.*'],
   server: './server/index.ts',
-  serverBuildPath: './build/index.js',
-  serverDependenciesToBundle: 'all',
+  serverBuildPath: './build/index.mjs',
+  serverDependenciesToBundle: ['remix-hono/handler'],
   // serverMinify: true,
-  serverModuleFormat: 'cjs',
+  serverModuleFormat: 'esm',
   watchPaths: ['./server/**/*.ts'],
   future: {
     v2_dev: true,

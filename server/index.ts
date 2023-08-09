@@ -1,17 +1,23 @@
 import { serve } from '@hono/node-server'
 import { serveStatic } from '@hono/node-server/serve-static'
 import * as build from '@remix-run/dev/server-build'
-import { logDevReady } from '@remix-run/node'
+import type { AppLoadContext, Session, SessionStorage } from '@remix-run/node'
+import { createRequestHandler, logDevReady } from '@remix-run/node'
 import { Hono, MiddlewareHandler } from 'hono'
+import { env } from 'hono/adapter'
 import { logger } from 'hono/logger'
-import { remix } from 'remix-hono/handler'
+import { sessionStorage } from './session'
 
 const NODE_ENV = process.env.NODE_ENV === 'production' ? 'production' : 'development'
 
-// type your Hono variables (used with ctx.get/ctx.set) here
-type Variables = {}
+const handleRemix = createRequestHandler(build, NODE_ENV)
 
-type ContextEnv = { Variables: Variables }
+type ContextEnv = {
+  Variables: {
+    sessionStorage: SessionStorage
+    session: Session
+  }
+}
 
 const app = new Hono<ContextEnv>()
 
@@ -24,17 +30,24 @@ app.use('/static/*', cache(60 * 60), serveStatic({ root: './public', index: '' }
 // log non-static requests
 app.use('*', logger())
 
+// manage sessions
+app.use('*', async function (c, next) {
+  c.set('sessionStorage', sessionStorage)
+  const session = await sessionStorage.getSession(c.req.headers.get('cookie'))
+  c.set('session', session)
+  await next()
+  c.header('set-cookie', await sessionStorage.commitSession(session))
+})
+
 // pass to remix
-app.use(
-  '*',
-  remix({
-    build,
-    mode: NODE_ENV,
-    getLoadContext(ctx) {
-      return ctx.env
-    },
-  })
-)
+app.use('*', async (c) => {
+  const loadContext: AppLoadContext = {
+    env: env(c),
+    session: c.get('session'),
+    sessionStorage: c.get('sessionStorage'),
+  }
+  return handleRemix(c.req.raw, loadContext)
+})
 
 // start app, broadcast devReady in dev mode
 serve(app, () => {

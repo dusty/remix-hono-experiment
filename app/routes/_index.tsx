@@ -1,4 +1,4 @@
-import { Nav } from "~/components/Nav";
+import { Nav } from '~/components/Nav'
 
 export default function IndexRoute() {
   return (
@@ -6,5 +6,5 @@ export default function IndexRoute() {
       <Nav />
       <p>Home</p>
     </div>
-  );
+  )
 }
