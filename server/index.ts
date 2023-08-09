@@ -8,8 +8,6 @@ import { remix } from 'remix-hono/handler'
 
 const NODE_ENV = process.env.NODE_ENV === 'production' ? 'production' : 'development'
 
-if (NODE_ENV === 'development') logDevReady(build)
-
 /* type your Hono variables (used with ctx.get/ctx.set) here */
 type Variables = {}
 
@@ -38,12 +36,9 @@ app.use(
   })
 )
 
-app.onError((err, c) => {
-  console.error('*****', `${err}`)
-  return c.text('Custom Error Message', 500)
+serve(app, () => {
+  if (NODE_ENV === 'development') logDevReady(build)
 })
-
-serve(app)
 
 function cache(seconds: number): MiddlewareHandler {
   return async function setCache(c, next) {
