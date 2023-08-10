@@ -6,13 +6,13 @@ settings:
 
 patchedDependencies:
   '@hono/node-server@1.1.1':
-    hash: bwhlo7ma5j7lg2rxfoe5tup7pe
+    hash: 2uikhqxlvyxzdnvbsynlx3lvuu
     path: patches/@hono__node-server@1.1.1.patch
 
 dependencies:
   '@hono/node-server':
     specifier: ^1.1.1
-    version: 1.1.1(patch_hash=bwhlo7ma5j7lg2rxfoe5tup7pe)
+    version: 1.1.1(patch_hash=2uikhqxlvyxzdnvbsynlx3lvuu)
   '@remix-run/css-bundle':
     specifier: ^1.19.3
     version: 1.19.3
@@ -1813,7 +1813,7 @@ packages:
     resolution: {integrity: sha512-k2Ty1JcVojjJFwrg/ThKi2ujJ7XNLYaFGNB/bWT9wGR+oSMJHMa5w+CUq6p/pVrKeNNgA7pCqEcjSnHVoqJQFw==}
     dev: true
 
-  /@hono/node-server@1.1.1(patch_hash=bwhlo7ma5j7lg2rxfoe5tup7pe):
+  /@hono/node-server@1.1.1(patch_hash=2uikhqxlvyxzdnvbsynlx3lvuu):
     resolution: {integrity: sha512-0ZfrcW8Y+TAGNzKGoDB1iQ7Gv7uGsGDOYlz7nckXcHRpK60Oxuz1ttiFmdHYmI6kGO+/VJ8Iy58LDhoTPqkiow==}
     engines: {node: '>=18.0.0'}
     dev: false
