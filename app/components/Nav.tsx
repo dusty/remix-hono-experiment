@@ -1,4 +1,4 @@
-import { Link } from '@remix-run/react'
+import { Form, Link } from '@remix-run/react'
 
 export function Nav() {
   return (
@@ -17,6 +17,14 @@ export function Nav() {
       </li>
       <li>
         <Link to="/three">Not Found</Link>
+      </li>
+      <li>
+        <Form
+          action="/logout"
+          method="POST"
+        >
+          <button type="submit">Logout</button>
+        </Form>
       </li>
     </ul>
   )

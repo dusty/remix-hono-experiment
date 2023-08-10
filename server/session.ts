@@ -1,6 +1,6 @@
-import { createCookie, createFileSessionStorage } from "@remix-run/node"
+import { createCookie, createFileSessionStorage } from '@remix-run/node'
 import path from 'path'
-import { createRedisSessionStorage } from "./storage"
+import { createRedisSessionStorage } from './storage'
 
 const COOKIE_KEY = 'session'
 

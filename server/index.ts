@@ -1,9 +1,10 @@
 import { serve } from '@hono/node-server'
 import { serveStatic } from '@hono/node-server/serve-static'
 import * as build from '@remix-run/dev/server-build'
-import type { AppLoadContext, Session, SessionStorage } from '@remix-run/node'
+import type { AppLoadContext, Session } from '@remix-run/node'
 import { createRequestHandler, logDevReady } from '@remix-run/node'
-import { Hono, MiddlewareHandler } from 'hono'
+import type { MiddlewareHandler } from 'hono'
+import { Hono } from 'hono'
 import { env } from 'hono/adapter'
 import { logger } from 'hono/logger'
 import { sessionStorage } from './session'
@@ -14,7 +15,6 @@ const handleRemix = createRequestHandler(build, NODE_ENV)
 
 type ContextEnv = {
   Variables: {
-    sessionStorage: SessionStorage
     session: Session
   }
 }
@@ -32,11 +32,14 @@ app.use('*', logger())
 
 // manage sessions
 app.use('*', async function (c, next) {
-  c.set('sessionStorage', sessionStorage)
-  const session = await sessionStorage.getSession(c.req.headers.get('cookie'))
+  const session = await sessionStorage.getSession(c.req.raw.headers.get('cookie'))
   c.set('session', session)
   await next()
-  c.header('set-cookie', await sessionStorage.commitSession(session))
+  if (!c.res.headers.get('set-cookie')) {
+    c.header('set-cookie', await sessionStorage.commitSession(session), {
+      append: true,
+    })
+  }
 })
 
 // pass to remix
@@ -44,7 +47,7 @@ app.use('*', async (c) => {
   const loadContext: AppLoadContext = {
     env: env(c),
     session: c.get('session'),
-    sessionStorage: c.get('sessionStorage'),
+    destroySession: () => sessionStorage.destroySession(c.get('session')),
   }
   return handleRemix(c.req.raw, loadContext)
 })

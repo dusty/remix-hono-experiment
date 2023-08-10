@@ -38,8 +38,6 @@ export function createRedisSessionStorage({ cookie, options }: RedisSessionStora
   })
 }
 
-
-
 interface FileSessionStorageOptions {
   cookie: Cookie
   dir: string
