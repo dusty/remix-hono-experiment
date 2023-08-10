@@ -35,11 +35,6 @@ app.use('*', async function (c, next) {
   const session = await sessionStorage.getSession(c.req.raw.headers.get('cookie'))
   c.set('session', session)
   await next()
-  /*
-    maybe we can fix this if we can't figure out why hono doesn't have getSetCookie
-    https://github.com/remix-run/remix/blob/e62ace4d9438653feae2be188ee412c49ca930ac/packages/remix-server-runtime/headers.ts#L2
-    https://www.npmjs.com/package/set-cookie-parser
-  */
   if (!c.res.headers.get('set-cookie')) {
     c.header('set-cookie', await sessionStorage.commitSession(session), {
       append: true,
