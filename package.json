@@ -31,5 +31,10 @@
   },
   "engines": {
     "node": ">=20.0.0"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "@hono/node-server@1.1.1": "patches/@hono__node-server@1.1.1.patch"
+    }
   }
 }

@@ -4,10 +4,15 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  '@hono/node-server@1.1.1':
+    hash: bwhlo7ma5j7lg2rxfoe5tup7pe
+    path: patches/@hono__node-server@1.1.1.patch
+
 dependencies:
   '@hono/node-server':
     specifier: ^1.1.1
-    version: 1.1.1
+    version: 1.1.1(patch_hash=bwhlo7ma5j7lg2rxfoe5tup7pe)
   '@remix-run/css-bundle':
     specifier: ^1.19.3
     version: 1.19.3
@@ -1808,10 +1813,11 @@ packages:
     resolution: {integrity: sha512-k2Ty1JcVojjJFwrg/ThKi2ujJ7XNLYaFGNB/bWT9wGR+oSMJHMa5w+CUq6p/pVrKeNNgA7pCqEcjSnHVoqJQFw==}
     dev: true
 
-  /@hono/node-server@1.1.1:
+  /@hono/node-server@1.1.1(patch_hash=bwhlo7ma5j7lg2rxfoe5tup7pe):
     resolution: {integrity: sha512-0ZfrcW8Y+TAGNzKGoDB1iQ7Gv7uGsGDOYlz7nckXcHRpK60Oxuz1ttiFmdHYmI6kGO+/VJ8Iy58LDhoTPqkiow==}
     engines: {node: '>=18.0.0'}
     dev: false
+    patched: true
 
   /@humanwhocodes/config-array@0.11.10:
     resolution: {integrity: sha512-KVVjQmNUepDVGXNuoRRdmmEjruj0KfiGSbS8LVc12LMsWDQzRXJ0qdhN8L8uUigKpfEHRhlaQFY0ib1tnUbNeQ==}
