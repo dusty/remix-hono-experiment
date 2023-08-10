@@ -36,14 +36,11 @@ app.use('*', async function (c, next) {
   const session = await sessionStorage.getSession(c.req.raw.headers.get('cookie'))
   c.set('session', session)
   await next()
-  if (c.get('destroySession')) {
-    c.header('set-cookie', await sessionStorage.destroySession(session), {
-      append: true,
-    })
-  } else {
-    c.header('set-cookie', await sessionStorage.commitSession(session), {
-      append: true,
-    })
+  if (!c.res.headers.get('set-cookie')) {
+    const cookie = c.get('destroySession')
+      ? await sessionStorage.destroySession(session)
+      : await sessionStorage.commitSession(session)
+    c.res.headers.set('set-cookie', cookie)
   }
 })
 
