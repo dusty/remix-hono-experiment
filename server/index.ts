@@ -3,6 +3,7 @@ import { serveStatic } from '@hono/node-server/serve-static'
 import * as build from '@remix-run/dev/server-build'
 import type { AppLoadContext, Session } from '@remix-run/node'
 import { broadcastDevReady, createRequestHandler } from '@remix-run/node'
+import crypto from 'crypto'
 import type { MiddlewareHandler } from 'hono'
 import { Hono } from 'hono'
 import { env } from 'hono/adapter'
@@ -17,6 +18,7 @@ type ContextEnv = {
   Variables: {
     session: Session
     destroySession?: boolean
+    requestId: string
   }
 }
 
@@ -28,6 +30,12 @@ app.use('/build/*', cache(60 * 60 * 24 * 365), serveStatic({ root: './public', i
 // cache other assets for 1 hour
 app.use('/static/*', cache(60 * 60), serveStatic({ root: './public', index: '' }))
 
+// set requestId
+app.use((c, next) => {
+  c.set('requestId', createId())
+  return next()
+})
+
 // log non-static requests
 app.use('*', logger())
 
@@ -37,6 +45,7 @@ app.use('*', async function (c, next) {
   c.set('session', session)
   await next()
   if (!c.res.headers.get('set-cookie')) {
+    if (!session.get('csrfToken')) session.set('csrfToken', createId())
     const cookie = c.get('destroySession')
       ? await sessionStorage.destroySession(session)
       : await sessionStorage.commitSession(session)
@@ -50,6 +59,7 @@ app.use('*', async (c) => {
     env: env(c),
     session: c.get('session'),
     destroySession: () => c.set('destroySession', true),
+    requestId: c.get('requestId'),
   }
   return handleRemix(c.req.raw, loadContext)
 })
@@ -65,4 +75,8 @@ function cache(seconds: number): MiddlewareHandler {
     await next()
     c.res.headers.set('cache-control', `public, max-age=${seconds}`)
   }
+}
+
+function createId() {
+  return crypto.randomUUID({ disableEntropyCache: true })
 }

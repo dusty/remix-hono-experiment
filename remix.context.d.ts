@@ -5,5 +5,6 @@ declare module '@remix-run/server-runtime' {
     env: Record<string, string>
     session: Session
     destroySession: () => void
+    requestId: string
   }
 }
