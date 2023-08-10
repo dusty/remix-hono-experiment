@@ -2,7 +2,7 @@ import { serve } from '@hono/node-server'
 import { serveStatic } from '@hono/node-server/serve-static'
 import * as build from '@remix-run/dev/server-build'
 import type { AppLoadContext, Session } from '@remix-run/node'
-import { createRequestHandler, logDevReady } from '@remix-run/node'
+import { broadcastDevReady, createRequestHandler } from '@remix-run/node'
 import type { MiddlewareHandler } from 'hono'
 import { Hono } from 'hono'
 import { env } from 'hono/adapter'
@@ -35,6 +35,11 @@ app.use('*', async function (c, next) {
   const session = await sessionStorage.getSession(c.req.raw.headers.get('cookie'))
   c.set('session', session)
   await next()
+  /*
+    maybe we can fix this if we can't figure out why hono doesn't have getSetCookie
+    https://github.com/remix-run/remix/blob/e62ace4d9438653feae2be188ee412c49ca930ac/packages/remix-server-runtime/headers.ts#L2
+    https://www.npmjs.com/package/set-cookie-parser
+  */
   if (!c.res.headers.get('set-cookie')) {
     c.header('set-cookie', await sessionStorage.commitSession(session), {
       append: true,
@@ -54,7 +59,7 @@ app.use('*', async (c) => {
 
 // start app, broadcast devReady in dev mode
 serve(app, () => {
-  if (NODE_ENV === 'development') logDevReady(build)
+  if (NODE_ENV === 'development') broadcastDevReady(build)
 })
 
 // add cache header to the response
