@@ -4,6 +4,6 @@ declare module '@remix-run/server-runtime' {
   export interface AppLoadContext {
     env: Record<string, string>
     session: Session
-    destroySession: () => Promise<string>
+    destroySession: () => void
   }
 }
