@@ -31,9 +31,9 @@ app.use('/build/*', cache(60 * 60 * 24 * 365), serveStatic({ root: './public', i
 app.use('/static/*', cache(60 * 60), serveStatic({ root: './public', index: '' }))
 
 // set requestId
-app.use((c, next) => {
+app.use(async (c, next) => {
   c.set('requestId', createId())
-  return next()
+  await next()
 })
 
 // log non-static requests
