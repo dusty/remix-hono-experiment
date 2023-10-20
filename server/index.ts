@@ -37,6 +37,7 @@ app.use(async (c, next) => {
 })
 
 // log non-static requests
+// TODO: make a better logger that also adds the requestId to it
 app.use('*', logger())
 
 // manage sessions
