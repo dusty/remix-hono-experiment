@@ -17,7 +17,7 @@ const handleRemix = createRequestHandler(build, NODE_ENV)
 type ContextEnv = {
   Variables: {
     session: Session
-    destroySession?: boolean
+    destroySession: boolean
     requestId: string
   }
 }
@@ -43,13 +43,16 @@ app.use('*', logger())
 app.use('*', async function (c, next) {
   const session = await sessionStorage.getSession(c.req.raw.headers.get('cookie'))
   c.set('session', session)
+  c.set('destroySession', false)
   await next()
-  if (!c.res.headers.get('set-cookie')) {
+  if (c.get('destroySession')) {
+    c.header('set-cookie', await sessionStorage.destroySession(session), { append: true })
+    const newSession = await sessionStorage.getSession(c.req.raw.headers.get('cookie'))
+    newSession.set('csrfToken', createId())
+    c.header('set-cookie', await sessionStorage.commitSession(newSession), { append: true })
+  } else {
     if (!session.get('csrfToken')) session.set('csrfToken', createId())
-    const cookie = c.get('destroySession')
-      ? await sessionStorage.destroySession(session)
-      : await sessionStorage.commitSession(session)
-    c.res.headers.set('set-cookie', cookie)
+    c.header('set-cookie', await sessionStorage.commitSession(session), { append: true })
   }
 })
 
