@@ -7,7 +7,7 @@ import crypto from 'crypto'
 import type { MiddlewareHandler } from 'hono'
 import { Hono } from 'hono'
 import { env } from 'hono/adapter'
-import { logger } from 'hono/logger'
+import { getPath } from 'hono/utils/url'
 import type { CreateSessionStorageArgs } from './session'
 import { createSessionStorage } from './session'
 
@@ -37,15 +37,18 @@ export function createServer({ mode, session, redis }: CreateServerArgs) {
   // cache other assets for 1 hour
   app.use('/static/*', cache(60 * 60), serveStatic({ root: './public', index: '' }))
 
+  app.use('*', async function (c, next) {
+    const start = Date.now()
+    await next()
+    const requestId = c.get('requestId')
+    console.log([c.req.method, getPath(c.req.raw), requestId, c.res.status, time(start)].join(' '))
+  })
+
   // set requestId
   app.use(async (c, next) => {
     c.set('requestId', createId())
     await next()
   })
-
-  // log non-static requests
-  // TODO: make a better logger that also adds the requestId to it
-  app.use('*', logger())
 
   // manage sessions
   app.use('*', async function (c, next) {
@@ -91,4 +94,15 @@ function cache(seconds: number): MiddlewareHandler {
 
 function createId() {
   return crypto.randomUUID({ disableEntropyCache: true })
+}
+
+function humanize(times: string[]) {
+  const [delimiter, separator] = [',', '.']
+  const orderTimes = times.map((v) => v.replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1' + delimiter))
+  return orderTimes.join(separator)
+}
+
+function time(start: number) {
+  const delta = Date.now() - start
+  return humanize([delta < 1000 ? delta + 'ms' : Math.round(delta / 1000) + 's'])
 }
