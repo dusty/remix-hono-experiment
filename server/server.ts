@@ -20,12 +20,12 @@ type ContextEnv = {
 }
 
 interface CreateServerArgs extends CreateSessionStorageArgs {
-  isProduction?: boolean
+  mode: 'development' | 'production' | 'test'
   prefix?: string
 }
 
-export function createServer({ isProduction, session, redis }: CreateServerArgs) {
-  const handleRemix = createRequestHandler(build, isProduction ? 'production' : 'development')
+export function createServer({ mode, session, redis }: CreateServerArgs) {
+  const handleRemix = createRequestHandler(build, mode)
   const { sessionStorage } = createSessionStorage({ session, redis })
   const app = new Hono<ContextEnv>()
 
@@ -77,7 +77,7 @@ export function createServer({ isProduction, session, redis }: CreateServerArgs)
 
   // start app, broadcast devReady in dev mode
   serve(app, () => {
-    if (!isProduction) broadcastDevReady(build)
+    if (mode !== 'production') broadcastDevReady(build)
   })
 }
 
