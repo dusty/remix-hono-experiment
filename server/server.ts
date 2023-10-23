@@ -37,22 +37,20 @@ export function createServer({ mode, session, redis }: CreateServerArgs) {
   // cache other assets for 1 hour
   app.use('/static/*', cache(60 * 60), serveStatic({ root: './public', index: '' }))
 
+  // handle logging
   app.use('*', async function (c, next) {
+    const requestId = createId()
+    c.set('requestId', requestId)
     const start = Date.now()
     await next()
-    const requestId = c.get('requestId')
     console.log([c.req.method, getPath(c.req.raw), requestId, c.res.status, time(start)].join(' '))
-  })
-
-  // set requestId
-  app.use(async (c, next) => {
-    c.set('requestId', createId())
-    await next()
   })
 
   // manage sessions
   app.use('*', async function (c, next) {
     const session = await sessionStorage.getSession(c.req.raw.headers.get('cookie'))
+    // const user = parseToken(session.get('token'))
+    // c.set('user', user)
     c.set('session', session)
     c.set('destroySession', false)
     await next()
