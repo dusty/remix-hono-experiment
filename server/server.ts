@@ -29,8 +29,6 @@ export function createServer({ mode, session, redis }: CreateServerArgs) {
   const { sessionStorage } = createSessionStorage({ session, redis })
   const app = new Hono<ContextEnv>()
 
-  // TODO: handle public prefix
-
   // cache hashed assets for 1y
   app.use('/build/*', cache(60 * 60 * 24 * 365), serveStatic({ root: './public', index: '' }))
 
